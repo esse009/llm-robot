@@ -7,6 +7,8 @@ Tested with Python 3.9.12. To setup the environment run these two commands in a 
 - `pip install -e chatgpt-av-events` will setup the project as a package accessible in the environment.
 - `pip install -r chatgpt-av-events/requirements.txt` will install required packages.
 
+For analysis with GPT-V, the API key of OpenAI needs to be placed in file `chatgpt-av-events/secret`. The file needs to be formatted as `chatgpt-av-events/secret example`.
+
 ### Configuration of project
 Configuration of the project needs to be defined in `chatgpt-av-events/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
 * `reports`: path with reports.
