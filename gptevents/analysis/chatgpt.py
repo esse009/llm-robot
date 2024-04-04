@@ -138,6 +138,8 @@ class ChatGPT:
                         "url": f"data:image/jpeg;base64,{page}"
                       },
                     })
+        # object to store response
+        response = None
         # send request to GPT4-V
         try:
             response = self.gpt_client.chat.completions.create(
