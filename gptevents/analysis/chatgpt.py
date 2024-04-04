@@ -124,7 +124,7 @@ class ChatGPT:
             dataframe: dataframe with responses.
         """
         # build content with multiple images
-        # first add a query to the content list 
+        # first add a query to the content list
         content = [{
                       "type": "text",
                       "text": gpte.common.get_configs('query'),
