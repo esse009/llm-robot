@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 from tqdm import tqdm
+import openai
 
 
 import gptevents as gpte
@@ -36,6 +37,8 @@ class ChatGPT:
         self.load_p = load_p
         # save data as csv file
         self.save_csv = save_csv
+        # client for communicating with GPT4-V
+        self.gpt_client = openai.OpenAI(api_key=gpte.common.get_secrets('openai_api_key'))
 
     def read_data(self, filter_data=True, clean_data=True, analyse_data=True):
         """Read data into an attribute.
@@ -58,10 +61,11 @@ class ChatGPT:
             # df = df.transpose()
             # go over all reports
             for file in tqdm(os.listdir(self.files_reports)):
+                logger.info('Processing report {}.', file)
                 # get pages as base64_image strings
                 pages = self.pdf_to_base64_image(file)
                 # feed all pages in the report to GPT-4V at once
-                df = pd.concat([df, self.process_gptv(file, pages)], ignore_index=True)
+                df = pd.concat([df, self.ask_gptv(file, pages)], ignore_index=True)
             # clean data
             if clean_data:
                 df = self.clean_data(df)
@@ -99,18 +103,18 @@ class ChatGPT:
         """
         # create full path of the file with the report
         file = os.fsdecode(file)
-        logger.info('Turning report {} into base64_image.', file)
-        file = os.path.join(self.files_reports, file)
-        f = open(file, 'r')
+        full_path = os.path.join(self.files_reports, file)
+        f = open(full_path, 'r')
         # each page is 1 base64_image
-        base64_image = []
+        base64_image = ['bla0', 'bla1']
         # TODO: turn pdfs into base64 (LZ)
         # close image
         f.close()
+        logger.debug('Turned report {} into base64_image.', file)
         return base64_image
 
     # TODO: call for GPT4-V (PB)
-    def process_gptv(self, file, pages):
+    def ask_gptv(self, file, pages):
         """Receive responses from GPT4-V for all pages at once.
         Args:
             file (str): File with report.
@@ -119,13 +123,42 @@ class ChatGPT:
         Returns:
             dataframe: dataframe with responses.
         """
-        logger.error('Not implemented.')
-        data = {'report': [file], 'response': ['todo']}
+        # build content with multiple images
+        # first add a query to the content list 
+        content = [{
+                      "type": "text",
+                      "text": gpte.common.get_configs('query'),
+                    }
+                   ]
+        # populate the list with base64 strings of pages in the report
+        for page in pages:
+            content.append({
+                      "type": "image_url",
+                      "image_url": {
+                        "url": f"data:image/jpeg;base64,{page}"
+                      },
+                    })
+        # send request to GPT4-V
+        try:
+            response = self.gpt_client.chat.completions.create(
+              model="gpt-4-vision-preview",
+              messages=[
+                {
+                  "role": "user",
+                  "content": content
+                }
+              ],
+              max_tokens=300,
+            )
+            logger.debug('Received response from GPT4-V: {}.', response.choices[0])
+        except openai.AuthenticationError:
+            logger.error('Incorrect API key provided to OpenAI.')
+            return None
+        data = {'report': [file], 'response': [response.choices[0]]}
         df = pd.DataFrame(data)
-        print(df)
         return df
 
-    # TODO: call for GPT4-V (PB)
+    # TODO: analysis of data from GPT4-V (PB, LZ)
     def analyse_data(self, df):
         """Analyse responses from GPT4-V for all reports.
         Args:
