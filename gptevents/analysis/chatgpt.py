@@ -115,7 +115,7 @@ class ChatGPT:
             image.save(image_path, 'JPEG')
             base64_images.append(self.encode_image(image_path))
         # close image
-        logger.debug('Turned report {} into base64_image.', file)
+        logger.debug('Turned report {} into base64 images.', file)
         return base64_images
 
     def encode_image(self, image_path):
@@ -154,6 +154,7 @@ class ChatGPT:
                         "url": f"data:image/jpeg;base64,{page}"
                       },
                     })
+        print(content)
         # object to store response
         response = None
         # send request to GPT4-V
