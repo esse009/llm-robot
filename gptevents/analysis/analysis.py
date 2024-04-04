@@ -65,9 +65,9 @@ class Analysis:
                 # check if column contains strings
                 if isinstance(df.iloc[0][variable], str):
                     # replace underscores with spaces
-                    df[variable] = df[variable].sgpte.replace('_', ' ')
+                    df[variable] = df[variable].str.replace('_', ' ')
                     # capitalise
-                    df[variable] = df[variable].sgpte.capitalize()
+                    df[variable] = df[variable].str.capitalize()
         # use index of df if no is given
         if not x:
             x = df.index
@@ -186,31 +186,31 @@ class Analysis:
         if pretty_text:
             if isinstance(df.iloc[0][x], str):  # check if string
                 # replace underscores with spaces
-                df[x] = df[x].sgpte.replace('_', ' ')
+                df[x] = df[x].str.replace('_', ' ')
                 # capitalise
-                df[x] = df[x].sgpte.capitalize()
+                df[x] = df[x].str.capitalize()
             if isinstance(df.iloc[0][y], str):  # check if string
                 # replace underscores with spaces
-                df[y] = df[y].sgpte.replace('_', ' ')
+                df[y] = df[y].str.replace('_', ' ')
                 # capitalise
-                df[y] = df[y].sgpte.capitalize()
+                df[y] = df[y].str.capitalize()
             if color and isinstance(df.iloc[0][color], str):  # check if string
                 # replace underscores with spaces
-                df[color] = df[color].sgpte.replace('_', ' ')
+                df[color] = df[color].str.replace('_', ' ')
                 # capitalise
-                df[color] = df[color].sgpte.capitalize()
+                df[color] = df[color].str.capitalize()
             if size and isinstance(df.iloc[0][size], str):  # check if string
                 # replace underscores with spaces
-                df[size] = df[size].sgpte.replace('_', ' ')
+                df[size] = df[size].str.replace('_', ' ')
                 # capitalise
-                df[size] = df[size].sgpte.capitalize()
+                df[size] = df[size].str.capitalize()
             try:
                 # check if string
                 if text and isinstance(df.iloc[0][text], str):
                     # replace underscores with spaces
-                    df[text] = df[text].sgpte.replace('_', ' ')
+                    df[text] = df[text].str.replace('_', ' ')
                     # capitalise
-                    df[text] = df[text].sgpte.capitalize()
+                    df[text] = df[text].str.capitalize()
             except ValueError as e:
                 logger.debug('Tried to prettify {} with exception {}', text, e)
         # scatter plot with histograms

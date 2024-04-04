@@ -10,8 +10,9 @@ logger = gpte.CustomLogger(__name__)  # use custom logger
 SAVE_P = True  # save pickle files with data
 LOAD_P = False  # load pickle files with data
 SAVE_CSV = True  # load csv files with data
-FILTER_DATA = True  # filter Appen and heroku data
-CLEAN_DATA = True  # clean Appen data
+FILTER_DATA = True  # filter GPT4-V and heroku data
+CLEAN_DATA = True  # clean GPT4-V data
+ANALYSE_DATA = True  # analyse GPT4-V data
 SHOW_OUTPUT = True  # should figures be plotted
 
 
@@ -23,30 +24,29 @@ if __name__ == '__main__':
                                     load_p=LOAD_P,
                                     save_csv=SAVE_CSV)
     # read heroku data
-    data = chatgpt.read_data(filter_data=FILTER_DATA, clean_data=CLEAN_DATA)
-    # merge heroku and appen dataframes into one
-    logger.info('Data from {} events included in analysis.', data.shape[0])
+    data = chatgpt.read_data(filter_data=FILTER_DATA, clean_data=CLEAN_DATA, analyse_data=ANALYSE_DATA)
+    logger.info('Data from {} reports included in analysis.', data.shape[0])
     if SHOW_OUTPUT:
         # Output
         analysis = gpte.analysis.Analysis()
         logger.info('Creating figures.')
         # some bar plot
         analysis.bar(data,
-                     y=[],
+                     y=['report'],
                      pretty_text=True,
                      save_file=True)
-        # # some scatter plot
-        # analysis.scatter(data,
-        #                  x='',
-        #                  y='',
-        #                  color='',
-        #                  pretty_text=True,
-        #                  save_file=True)
+        # some scatter plot
+        analysis.scatter(data,
+                         x='report',
+                         y='response',
+                         color='report',
+                         pretty_text=True,
+                         save_file=True)
         # # some histogram
-        # analysis.hist(data,
-        #               x=[],
-        #               pretty_text=True,
-        #               save_file=True)
+        analysis.hist(data,
+                      x=['report'],
+                      pretty_text=True,
+                      save_file=True)
         # # some map
         # analysis.map(data, color='', save_file=True)
         # check if any figures are to be rendered
