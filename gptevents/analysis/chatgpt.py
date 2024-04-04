@@ -91,10 +91,9 @@ class ChatGPT:
 
     def pdf_to_base64_image(self, file):
         """Turn pages of the PDF file with the report to base64 strings.
-        
         Args:
             file (str): Name of file of the report.
-        
+
         Returns:
             base64_image (list): List of pages as base64 strings.
         """
@@ -113,11 +112,10 @@ class ChatGPT:
     # TODO: call for GPT4-V (PB)
     def process_gptv(self, file, pages):
         """Receive responses from GPT4-V for all pages at once.
-        
         Args:
             file (str): File with report.
             pages (list): List of pages as base64 strings.
-        
+
         Returns:
             dataframe: dataframe with responses.
         """
@@ -130,10 +128,9 @@ class ChatGPT:
     # TODO: call for GPT4-V (PB)
     def analyse_data(self, df):
         """Analyse responses from GPT4-V for all reports.
-        
         Args:
             df (TYPE): Dataframe with responses from GPT4-V for all reports.
-        
+
         Returns:
             dataframe: updated dataframe.
         """
