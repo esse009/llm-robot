@@ -19,10 +19,7 @@ SHOW_OUTPUT = True  # should figures be plotted
 if __name__ == '__main__':
     # create object for working with heroku data
     reports = gpte.common.get_configs('reports')
-    chatgpt = gpte.analysis.ChatGPT(files_reports=reports,
-                                    save_p=SAVE_P,
-                                    load_p=LOAD_P,
-                                    save_csv=SAVE_CSV)
+    chatgpt = gpte.analysis.ChatGPT(files_reports=reports, save_p=SAVE_P, load_p=LOAD_P, save_csv=SAVE_CSV)
     # read heroku data
     data = chatgpt.read_data(filter_data=FILTER_DATA, clean_data=CLEAN_DATA, analyse_data=ANALYSE_DATA)
     logger.info('Data from {} reports included in analysis.', data.shape[0])
@@ -31,22 +28,11 @@ if __name__ == '__main__':
         analysis = gpte.analysis.Analysis()
         logger.info('Creating figures.')
         # some bar plot
-        analysis.bar(data,
-                     y=['report'],
-                     pretty_text=True,
-                     save_file=True)
+        analysis.bar(data, y=['report'], pretty_text=True, save_file=True)
         # some scatter plot
-        analysis.scatter(data,
-                         x='report',
-                         y='response',
-                         color='report',
-                         pretty_text=True,
-                         save_file=True)
+        analysis.scatter(data, x='report', y='response', color='report', pretty_text=True, save_file=True)
         # # some histogram
-        analysis.hist(data,
-                      x=['report'],
-                      pretty_text=True,
-                      save_file=True)
+        analysis.hist(data, x=['report'],  pretty_text=True, save_file=True)
         # # some map
         # analysis.map(data, color='', save_file=True)
         # check if any figures are to be rendered

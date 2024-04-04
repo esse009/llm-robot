@@ -84,10 +84,8 @@ class ChatGPT:
             gpte.common.save_to_p(self.file_p, df, 'chatgpt data')
         # save to csv
         if self.save_csv:
-            df.to_csv(os.path.join(gpte.settings.output_dir, self.file_data_csv),
-                      index=False)
-            logger.info('Saved data to csv file {}',
-                        self.file_data_csv + '.csv')
+            df.to_csv(os.path.join(gpte.settings.output_dir, self.file_data_csv), index=False)
+            logger.info('Saved data to csv file {}', self.file_data_csv + '.csv')
         # update attribute
         self.data = df
         # return df with data
