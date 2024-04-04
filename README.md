@@ -9,8 +9,8 @@ Tested with Python 3.9.12. To setup the environment run these two commands in a 
 
 ### Configuration of project
 Configuration of the project needs to be defined in `chatgpt-av-events/config`. Please use the `default.config` file for the required structure of the file. If no custom config file is provided, `default.config` is used. The config file has the following parameters:
-* `param-o`: value
-* `param-o`: value
+* `reports`: path with reports.
+* `plotly_template`: template used to make graphs in the analysis.
 
 ## Preparation of reports
 The source files of the video stimuli are outputted from Unity to `config.path_source`. To prepare them for the crowdsourced setup `python chatgpt-av-events/preparation/process_videos.py`. Videos will be outputted to `config.path_stimuli`.
