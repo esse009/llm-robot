@@ -120,10 +120,9 @@ class ChatGPT:
 
     def encode_image(self, image_path):
         """Return base64 string for an image.
-        
         Args:
             image_path (TYPE): Path of image.
-        
+
         Returns:
             str: encoded string.
         """
