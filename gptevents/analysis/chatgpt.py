@@ -1,9 +1,10 @@
-# by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com>
+# by Pavlo Bazilinskyy <pavlo.bazilinskyy@gmail.com> and Linghan Zhang
 import os
 import pandas as pd
 from tqdm import tqdm
 import openai
-
+from pdf2image import convert_from_path
+import base64
 
 import gptevents as gpte
 
@@ -102,14 +103,32 @@ class ChatGPT:
         # create full path of the file with the report
         file = os.fsdecode(file)
         full_path = os.path.join(self.files_reports, file)
-        f = open(full_path, 'r')
         # each page is 1 base64_image
-        base64_image = ['bla0', 'bla1']
-        # TODO: turn pdfs into base64 (LZ)
+        base64_images = []
+        imgs = convert_from_path(full_path)
+        temp_jpg = 'output_images'
+        if not os.path.exists(temp_jpg):
+            os.makedirs(temp_jpg)
+        for i, image in enumerate(imgs):
+            # save generated images. This can be overwritten.
+            image_path = os.path.join(temp_jpg, f"page_{i+1}.jpg")
+            image.save(image_path, 'JPEG')
+            base64_images.append(self.encode_image(image_path))
         # close image
-        f.close()
         logger.debug('Turned report {} into base64_image.', file)
-        return base64_image
+        return base64_images
+
+    def encode_image(self, image_path):
+        """Return base64 string for an image.
+        
+        Args:
+            image_path (TYPE): Path of image.
+        
+        Returns:
+            str: encoded string.
+        """
+        with open(image_path, "rb") as imageFile:
+            return base64.b64encode(imageFile.read()).decode('utf-8')
 
     # TODO: call for GPT4-V (PB)
     def ask_gptv(self, file, pages):
