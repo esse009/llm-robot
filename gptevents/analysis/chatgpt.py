@@ -5,6 +5,7 @@ from tqdm import tqdm
 import openai
 from pdf2image import convert_from_path
 import base64
+from PIL import Image
 
 import gptevents as gpte
 
@@ -64,7 +65,7 @@ class ChatGPT:
             for file in tqdm(os.listdir(self.files_reports)):
                 logger.info('Processing report {}.', file)
                 # get pages as base64_image strings
-                pages = self.pdf_to_base64_image(file)
+                pages = self.pdf_to_base64_image(file, resize_image=True)
                 # feed all pages in the report to GPT-4V at once
                 df = pd.concat([df, self.ask_gptv(file, pages)], ignore_index=True)
             # clean data
@@ -92,7 +93,7 @@ class ChatGPT:
         # return df with data
         return df
 
-    def pdf_to_base64_image(self, file):
+    def pdf_to_base64_image(self, file, resize_image=False, resize_dimentions=(2000, 2000)):
         """Turn pages of the PDF file with the report to base64 strings.
         Args:
             file (str): Name of file of the report.
@@ -106,13 +107,17 @@ class ChatGPT:
         # each page is 1 base64_image
         base64_images = []
         imgs = convert_from_path(full_path)
-        temp_jpg = 'output_images'
-        if not os.path.exists(temp_jpg):
-            os.makedirs(temp_jpg)
+        temp_png = 'output_images'
+        if not os.path.exists(temp_png):
+            os.makedirs(temp_png)
         for i, image in enumerate(imgs):
             # save generated images. This can be overwritten.
-            image_path = os.path.join(temp_jpg, f"page_{i+1}.jpg")
-            image.save(image_path, 'JPEG')
+            image_path = os.path.join(temp_png, f"page_{i+1}.png")
+            # resize image with preserving the aspect ratio
+            if (resize_image):
+                image.thumbnail(resize_dimentions, Image.Resampling.LANCZOS)
+            # save image
+            image.save(image_path, 'PNG')
             base64_images.append(self.encode_image(image_path))
         # close image
         logger.debug('Turned report {} into base64 images.', file)
@@ -129,7 +134,6 @@ class ChatGPT:
         with open(image_path, "rb") as imageFile:
             return base64.b64encode(imageFile.read()).decode('utf-8')
 
-    # TODO: call for GPT4-V (PB)
     def ask_gptv(self, file, pages):
         """Receive responses from GPT4-V for all pages at once.
         Args:
@@ -151,10 +155,10 @@ class ChatGPT:
             content.append({
                       "type": "image_url",
                       "image_url": {
-                        "url": f"data:image/jpeg;base64,{page}"
+                        "url": f"data:image/png;base64,{page}",
+                        "detail": "high"
                       },
                     })
-        print(content)
         # object to store response
         response = None
         # send request to GPT4-V
@@ -173,8 +177,11 @@ class ChatGPT:
         except openai.AuthenticationError:
             logger.error('Incorrect API key provided to OpenAI.')
             return None
+        except openai.BadRequestError as e:
+            logger.error('Bad request given to OpenAI: {}.', e)
+            return None
         # turn response into a dataframe
-        data = {'report': [file], 'response': [response.choices[0]]}
+        data = {'report': [file], 'response': [response.choices[0].message.content]}
         df = pd.DataFrame(data)
         return df
 
