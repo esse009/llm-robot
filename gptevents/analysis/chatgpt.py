@@ -58,8 +58,8 @@ class ChatGPT:
             # go over all reports
             for file in tqdm(os.listdir(self.files_reports)):
                 file = os.fsdecode(file)
+                logger.info('Processing report {}.', file)
                 file = os.path.join(self.files_reports, file)
-                logger.info('Processing report from {}.', file)
                 f = open(file, 'r')
                 # TODO: add data from the report to the dataframe
                 f.close()
