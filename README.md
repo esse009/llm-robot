@@ -12,8 +12,8 @@ Configuration of the project needs to be defined in `chatgpt-av-events/config`. 
 * `reports`: path with reports.
 * `plotly_template`: template used to make graphs in the analysis.
 
-## Preparation of reports
-The source files of the video stimuli are outputted from Unity to `config.path_source`. To prepare them for the crowdsourced setup `python chatgpt-av-events/preparation/process_videos.py`. Videos will be outputted to `config.path_stimuli`.
+## Analysis
+Analysis can be started by running `python chatgpt-av-events/gptevents/run.py`. A number of CSV files used for data processing are saved in `chatgpt-av-events/_output`. Visualisations of all data are saved in `chatgpt-av-events/_output/figures/`.
 
 ## Troubleshooting
 ### Troubleshooting setup
