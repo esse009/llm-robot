@@ -156,6 +156,7 @@ class ChatGPT:
         except openai.AuthenticationError:
             logger.error('Incorrect API key provided to OpenAI.')
             return None
+        # turn response into a dataframe
         data = {'report': [file], 'response': [response.choices[0]]}
         df = pd.DataFrame(data)
         return df
