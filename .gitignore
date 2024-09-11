@@ -87,7 +87,6 @@ lerna-debug.log*
 *.sublime-workspace
 
 # Instance specific files
-config
 secret
 
 # Python files

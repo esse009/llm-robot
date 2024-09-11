@@ -6,6 +6,7 @@ import openai
 from pdf2image import convert_from_path
 import base64
 from PIL import Image
+import time
 
 import gptevents as gpte
 
@@ -67,7 +68,7 @@ class ChatGPT:
                 # get pages as base64_image strings
                 pages = self.pdf_to_base64_image(file, resize_image=True)
                 # feed all pages in the report to GPT-4V at once
-                df = pd.concat([df, self.ask_gptv(file, pages)], ignore_index=True)
+                df = pd.concat([df, self.ask_gptv(file, pages)], ignore_index=True)    
             # clean data
             if clean_data:
                 df = self.clean_data(df)
@@ -121,6 +122,8 @@ class ChatGPT:
             base64_images.append(self.encode_image(image_path))
         # close image
         logger.debug('Turned report {} into base64 images.', file)
+        # combine all base64 images into one string
+        # base64_images = ''.join(base64_images)
         return base64_images
 
     def encode_image(self, image_path):
@@ -135,7 +138,7 @@ class ChatGPT:
             return base64.b64encode(imageFile.read()).decode('utf-8')
 
     def ask_gptv(self, file, pages):
-        """Receive responses from GPT4-V for all pages at once.
+        """Receive responses from GPT4 for all pages at once.
         Args:
             file (str): File with report.
             pages (list): List of pages as base64 strings.
@@ -164,14 +167,14 @@ class ChatGPT:
         # send request to GPT4-V
         try:
             response = self.gpt_client.chat.completions.create(
-              model="gpt-4-vision-preview",
+              model="gpt-4o",
               messages=[
                 {
                   "role": "user",
                   "content": content
                 }
               ],
-              max_tokens=300,
+              max_tokens=2000,
             )
             logger.debug('Received response from GPT4-V: {}.', response.choices[0])
         except openai.AuthenticationError:
@@ -180,11 +183,17 @@ class ChatGPT:
         except openai.BadRequestError as e:
             logger.error('Bad request given to OpenAI: {}.', e)
             return None
+        except openai.RateLimitError:
+            logger.warning('Rate limit exceeded. Retrying after a short delay...')
+            time.sleep(60)  # wait 60 seconds
+            return self.ask_gptv(file, pages)
         # turn response into a dataframe
         data = {'report': [file], 'response': [response.choices[0].message.content]}
         df = pd.DataFrame(data)
         return df
 
+
+                
     # TODO: analysis of data from GPT4-V (PB, LZ)
     def analyse_data(self, df):
         """Analyse responses from GPT4-V for all reports.

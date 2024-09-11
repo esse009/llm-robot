@@ -7,8 +7,8 @@ gpte.logs(show_level='info', show_color=True)
 logger = gpte.CustomLogger(__name__)  # use custom logger
 
 # const
-SAVE_P = False  # save pickle files with data
-LOAD_P = True  # load pickle files with data
+SAVE_P = True  # save pickle files with data
+LOAD_P = False  # load pickle files with data
 SAVE_CSV = True  # load csv files with data
 FILTER_DATA = True  # filter GPT4-V and heroku data
 CLEAN_DATA = True  # clean GPT4-V data
